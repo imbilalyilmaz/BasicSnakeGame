@@ -108,8 +108,11 @@ def move():
         snake.setx(x + 20)
 
 
+currentDelay = 100
+
+
 def moveSnake():
-    global score
+    global score, currentDelay
     wn.update()
 
     if snake.xcor() > 290 or snake.xcor() < -290 or snake.ycor() > 290 or snake.ycor() < -290:
@@ -124,6 +127,8 @@ def moveSnake():
 
         food.goto(0, 100)
 
+        currentDelay = 100
+
         score = 0
         scoreGui.clear()
         scoreGui.write("Score: {}".format(score), align="center",
@@ -134,6 +139,7 @@ def moveSnake():
                     font=("Courier", 24, "normal"))
     else:
         if snake.distance(food) < 20:
+            # Teleport food to a new location
             x = random.randint(-270, 270)
             y = random.randint(-270, 270)
 
@@ -143,10 +149,16 @@ def moveSnake():
 
             food.goto(x, y)
 
+            # Speed by score
+            if score % 50 == 0 and score > 0 and currentDelay >= 70:
+                currentDelay -= 1
+
+            # Create a new segment
             newSegment = turtle.Turtle()
             newSegment.speed(0)
             newSegment.shape("square")
-            newSegment.color("grey")
+            newSegment.color("black")  # Kenar rengi olarak siyah
+            newSegment.fillcolor("grey")
             newSegment.penup()
             segments.append(newSegment)
 
@@ -181,6 +193,8 @@ def moveSnake():
 
                 food.goto(0, 100)
 
+                currentDelay = 100
+
                 score = 0
                 scoreGui.clear()
                 scoreGui.write("Score: {}".format(score), align="center",
@@ -190,7 +204,8 @@ def moveSnake():
                 start.write("Click On the Screen to Start", align="center",
                             font=("Courier", 24, "normal"))
                 return
-        wn.ontimer(moveSnake, 100)
+
+        wn.ontimer(moveSnake, currentDelay)
 
 
 wn.onscreenclick(startGame)
